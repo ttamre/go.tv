@@ -23,4 +23,4 @@ make build
 
 <!-- LICENSE -->
 <h2 style="font-family:monospace">License</h2>
-<p style="font-family:monospace">This project is licensed under the GNU v3 General Public License. For more information, see the <a href="https://github.com/ttamre/carketplace/blob/main/LICENSE">LICENSE</a></p>
+<p style="font-family:monospace">This project is licensed under the GNU v3 General Public License. For more information, see the <a href="https://github.com/ttamre/go.tv/blob/main/LICENSE">LICENSE</a></p>
