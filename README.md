@@ -11,17 +11,15 @@
 <!-- INSTALLATION -->
 <h2 style="font-family:monospace">Installation</h2>
 
-<p style="font-family:monospace">1) Clone repository</p>
-
-`git clone https://github.com/ttamre/go.tv.git`
+```bash
+git clone https://github.com/ttamre/go.tv.git
+make build
+```
 
 <!-- USAGE -->
 <h2 style="font-family:monospace">Usage</h2>
 
-```bash
-make            # need to run `make` or `make build` once to build the binary
-./build/gotv    # run the binary
-```
+`./build/gotv`
 
 <!-- LICENSE -->
 <h2 style="font-family:monospace">License</h2>
