@@ -16,20 +16,16 @@
 
 ```bash
 git clone https://github.com/ttamre/go.tv.git
-make build
+make build      # build backend
+vite build web  # build frontend
 ```
 
 <!-- USAGE -->
 <h2 style="font-family:monospace">Usage</h2>
 
 ```bash
-# Backend
-./build/gotv
-
-# Frontend
-cd web
-vite build
-http-server dist
+./build/gotv            # serve backend
+http-server web/dist    # serve frontend
 ```
 
 <!-- LICENSE -->
