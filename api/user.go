@@ -1,43 +1,19 @@
 package api
 
-import ("fmt")
-
-type Review struct {
-	ID     int      // primary key
-	UserID int		// foreign key
-	MovieID int		// foreign key
-
-	Rating int
-	Review string
-}
-
-type Movie struct {
-    ID     int      // primary key
-    Title  string
-    Year   int
-    Genre  string
-    Director string
-}
 
 type User struct {
-    ID       int        // primary key
-    Username string
-    Password string
-    Reviews []Review
-    ProfilePic file
+	ID       int 		`json:id`		// primary key
+	Username string		`json:username`
+	Password string		`json:password`
+	// Reviews  []Review	`json:reviews`
 }
 
+
+
+
+
+
 /*
-[GET] 	user searches for a movie in database
-(func) SearchMovie(title string) (Movie, error)
-	if found
-		return it
-	if not found
-		[IMDB]	search for movie in IMDB
-		[POST] 	if the user selects a movie, it is returned and saved in the database
-		(func) AddMovie(movie Movie) error
-
-
 [IMDB] user can submit a review for the given movie
 [POST] save the review in the database
 [POST] save the movie in the database if it doesn't already exist

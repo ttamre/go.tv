@@ -13,7 +13,7 @@ COVERAGE_HTML 	= $(BUILD_FOLDER)/coverage.html
 
 
 # Default target
-default: build run
+default: clean build run
 
 # Build target
 build:
