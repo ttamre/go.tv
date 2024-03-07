@@ -1,17 +1,14 @@
 package api
 
+
 import (
-	"fmt"
-	// "io"
 	"os"
 	"log"
-	// "strconv"
-	// "net/http"
-	// "net/url"
-	// "encoding/json"
-	"database/sql"
+	"strconv"
+	"encoding/json"
 	"github.com/ryanbradynd05/go-tmdb"
 )
+
 
 type APIResponse struct {
 	Page    int `json:"page"`
@@ -43,8 +40,61 @@ type Movie struct {
 	IMDBRating 	float64	`json:imdb_rating`
 }
 
+sq
 var tmdbAPI *tmdb.TMDb
 var genreMap map[int]string
+
+
+// func SaveMovie(db *sql.DB, movie Movie) error {}
+
+
+/* Search for a movie and return a list of results */
+func GetMovies(title string) ([]Movie, error) {
+	tmdbAPI = tmdb.Init(tmdb.Config{
+    	APIKey:   os.Getenv("TMDB_API_KEY"),
+  		Proxies:  nil,
+       	UseProxy: false,
+    })
+    options := make(map[string]string)
+    options["language"] = "en-US"
+
+    // Search for movie
+    response, err := tmdbAPI.SearchMovie(title, options)
+    if err != nil {log.Println(err); return []Movie{}, err;}
+
+    // Convert response to JSON
+    responseJSON, err := tmdb.ToJSON(response)
+    if err != nil {log.Println(err); return []Movie{}, err;}
+
+    // Convert JSON to APIResponse
+    var apiResponse APIResponse
+    if err := json.Unmarshal([]byte(responseJSON), &apiResponse); err != nil {
+        log.Fatal("Error unmarshalling JSON:", err)
+    }
+
+    // Convert APIResponse to list of Movies
+    var movies []Movie
+    for _, movie := range apiResponse.Results {
+    	// Parse genre ID into string
+    	var genre string
+		for _, id := range movie.GenreIds {genre += genreMap[id] + ", ";}
+
+		// Parse release date string into year int
+		year, err := strconv.Atoi(movie.ReleaseDate[:4])
+		if err != nil {log.Println(err); return []Movie{}, err;}
+
+		// Append movie to list
+		movies = append(movies, Movie{
+			ID: movie.ID,
+			Title: movie.Title,
+			Year: year,
+			Genre: genre[:len(genre)-2],
+			IMDBRating: movie.VoteAverage,
+		})
+	}
+
+    return movies, nil
+}
 
 
 func init() {
@@ -77,86 +127,4 @@ func init() {
 	    10767: "Talk",
 	    10768: "War & Politics",
 	}
-}
-
-func SaveMovie(db *sql.DB, movie Movie) error {
-	// Insert data into the table
-    insertQuery := "INSERT INTO movies (id, title, year, genre, imdb_rating) VALUES ($1, $2, $3, $4, $5)"
-    _, err := db.Exec(insertQuery, movie.ID, movie.Title, movie.Year, movie.Genre, movie.IMDBRating)
-    if err != nil {return err;}
-    return nil
-}
-
-
-/* Search for a movie and return a list of results */
-func GetMovies(db *sql.DB, title string) ([]Movie, error) {
-	tmdbAPI = tmdb.Init(tmdb.Config{
-    	APIKey:   os.Getenv("TMDB_API_KEY"),
-  		Proxies:  nil,
-       	UseProxy: false,
-    })
-    options := make(map[string]string)
-    options["language"] = "en-US"
-
-    response, err := tmdbAPI.SearchMovie(title, options)
-    if err != nil {log.Println(err); return []Movie{}, err;}
-
-    responseJSON, err := tmdb.ToJSON(response)
-    if err != nil {log.Println(err); return []Movie{}, err;}
-
-    fmt.Println(string(responseJSON))
-}
-
-// func GetMovies(db *sql.DB, title string) ([]Movie, error) {
-	// Create properly formatted URL
-	// target, err := url.Parse(endpoint)
-	// if err != nil {log.Println(err); return []Movie{}, err;}
-
-	// params := url.Values{}
-	// params.Add("query", title)
-	// params.Add("language", "en-US")
-	// target.RawQuery = params.Encode() // Escape Query Parameters
-
-	// // Create and send GET request
-	// req, err := http.NewRequest("GET", target.String(), nil)
-	// if err != nil {log.Println(err); return []Movie{}, err;}
-
-	// req.Header.Add("accept", "application/json")
-	// req.Header.Add("Authorization", os.Getenv("TMDB_API_TOKEN"))
-	// res, err := http.DefaultClient.Do(req)
-	// if err != nil {log.Println(err); return []Movie{}, err;}
-
-	// defer res.Body.Close()
-
-	// // Create a list of movies based on the response and return it
-	// body, err := io.ReadAll(res.Body)
-	// if err != nil {log.Println(err); return []Movie{}, err;}
-
-	// var apiResponse APIResponse
-    // if err := json.Unmarshal(body, &apiResponse); err != nil {
-    //     log.Fatal("Error unmarshalling JSON:", err)
-    // }
-
-    // movies := make([]Movie, len(apiResponse.Results))
-
-	// for i, movie := range apiResponse.Results {
-	// 	// Convert genre ids to genre names
-	// 	var genre string
-	// 	for _, id := range movie.GenreIds {
-	// 		genre += genreMap[id] + ", "
-	// 	}
-
-	// 	year, err := strconv.Atoi(movie.ReleaseDate[:4])
-	// 	if err != nil {log.Println(err); return []Movie{}, err;}
-
-	// 	movies[i] = Movie{
-	// 		ID: movie.ID,
-	// 		Title: movie.Title,
-	// 		Year: year,
-	// 		Genre: genre[:len(genre)-2],
-	// 		IMDBRating: movie.VoteAverage,
-	// 	}
-	// }
-
-	// return []Movie{}, nil
 }

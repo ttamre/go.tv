@@ -17,7 +17,7 @@ default: clean build run
 
 # Build target
 build:
-	@$(GOBUILD) -o $(BINARY_NAME)
+	@CGO_ENABLED=0 $(GOBUILD) -o $(BINARY_NAME)
 
 # Built and run target
 run: build
@@ -36,4 +36,4 @@ test:
 
 # Install dependencies
 deps:
-	@$(GOGET) -v ./...
+	$(GOGET) -v ./...

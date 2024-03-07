@@ -5,7 +5,7 @@ type User struct {
 	ID       int 		`json:id`		// primary key
 	Username string		`json:username`
 	Password string		`json:password`
-	// Reviews  []Review	`json:reviews`
+	// Reviews  []int	`json:reviews`	// review IDs
 }
 
 
