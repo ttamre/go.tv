@@ -2,35 +2,41 @@ package api
 
 
 type User struct {
-	ID       int 		`json:id`		// primary key
+	ID       int 		`json:_id`		// primary key
 	Username string		`json:username`
 	Password string		`json:password`
-	// Reviews  []int	`json:reviews`	// review IDs
+	Reviews  []Review	`json:reviews`
 }
 
 
 
+func CreateUser(username string, password string) (User, error) {
+	// add to database
+	return User{Username: username, Password: password, Reviews: []Review{}}, nil
+}
 
+func GetUser(username string, password string) (User, error) {
+	// validate hash and salted password
+	// if valid
+		// get user from database
+		// return user as a struct
+	// else
+		// return nil, errors.New("Invalid username or password")
+	return User{Username: username, Password: password}, nil
+}
 
+func UpdateUsername(user *User, newUsername string) {
+	// update database
+	user.Username = newUsername
+}
 
-/*
-[IMDB] user can submit a review for the given movie
-[POST] save the review in the database
-[POST] save the movie in the database if it doesn't already exist
-(func) AddReview(movieID int, review Review) error
+func UpdatePassword(user *User, newPassword string) {
+	// update database
+	// hash and salt password
+	user.Password = newPassword
+}
 
-[GET] user can get a list of reviews on their profile from the database
-(func) GetReviews(userID int) ([]Review, error)
-
-[GET] user can get an individual review from database
-(func) GetReview(reviewID int) (Review, error)
-
-[PATCH] if a user wants to update a review, the review is updated in the database
-(func) UpdateReview(review *Review) error
-
-[DELETE] if a user wants to delete a review, the review is removed from the database
-(func) DeleteReview(reviewID int) error
-
-[AI]	user can view a list of recommended movies based on their reviews
-(func)	GetRecommendations(userID int) ([]Movie, error)
-*/
+func DeleteUser(user *User) {
+	// remove from database
+	user = nil
+}

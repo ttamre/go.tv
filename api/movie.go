@@ -5,6 +5,7 @@ import (
 	"os"
 	"log"
 	"strconv"
+	"strings"
 	"encoding/json"
 	"github.com/ryanbradynd05/go-tmdb"
 )
@@ -33,28 +34,31 @@ type APIResponse struct {
 }
 
 type Movie struct {
-	ID       	int		`json:id`		// primary key
+	ID       	int		`json:_id`		// primary key
 	Title    	string	`json:title`
 	Year     	int		`json:year`
 	Genre    	string	`json:genre`
 	IMDBRating 	float64	`json:imdb_rating`
 }
 
-sq
+
 var tmdbAPI *tmdb.TMDb
 var genreMap map[int]string
 
+/*
+[IMDB] user can submit a review for the given movie
+[POST] save the review in the database
+[POST] save the movie in the database if it doesn't already exist
+(func) AddReview(movieID int, review Review) error
 
-// func SaveMovie(db *sql.DB, movie Movie) error {}
+[AI]	user can view a list of recommended movies based on their reviews
+(func)	GetRecommendations(userID int) ([]Movie, error)
+*/
 
 
 /* Search for a movie and return a list of results */
 func GetMovies(title string) ([]Movie, error) {
-	tmdbAPI = tmdb.Init(tmdb.Config{
-    	APIKey:   os.Getenv("TMDB_API_KEY"),
-  		Proxies:  nil,
-       	UseProxy: false,
-    })
+
     options := make(map[string]string)
     options["language"] = "en-US"
 
@@ -80,8 +84,13 @@ func GetMovies(title string) ([]Movie, error) {
 		for _, id := range movie.GenreIds {genre += genreMap[id] + ", ";}
 
 		// Parse release date string into year int
-		year, err := strconv.Atoi(movie.ReleaseDate[:4])
-		if err != nil {log.Println(err); return []Movie{}, err;}
+		var year int
+		if movie.ReleaseDate != "" {
+			year, err = strconv.Atoi(movie.ReleaseDate[:4])
+			if err != nil {log.Println(err); return []Movie{}, err;}
+		} else {
+			year = 0
+		}
 
 		// Append movie to list
 		movies = append(movies, Movie{
@@ -96,8 +105,41 @@ func GetMovies(title string) ([]Movie, error) {
     return movies, nil
 }
 
+/* Return a list of URLs for a given movie */
+func GetPosters(movie Movie) ([]string, error) {
+	options := make(map[string]string)
+	options["language"] = "en"
+	images, err := tmdbAPI.GetMovieImages(movie.ID, options)
+	if err != nil {
+		log.Println(err);
+	}
+
+	config, err := tmdbAPI.GetConfiguration()
+	if err != nil {
+		log.Println(err);
+	}
+
+	posters := images.Posters
+	posterUrls := []string{}
+	for _, poster := range posters {
+		posterUrl := config.Images.BaseURL + "original" + poster.FilePath
+		posterUrl = strings.TrimSpace(posterUrl)
+
+		if posterUrl != "" {
+			posterUrls = append(posterUrls, posterUrl)
+		}
+	}
+	return posterUrls, nil
+}
+
 
 func init() {
+	tmdbAPI = tmdb.Init(tmdb.Config{
+    	APIKey:   os.Getenv("TMDB_API_KEY"),
+  		Proxies:  nil,
+       	UseProxy: false,
+    })
+
 	genreMap = map[int]string{
 		28: "Action",
 	    12: "Adventure",
