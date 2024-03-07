@@ -6,7 +6,7 @@
 
 <!-- DESCRIPTION -->
 <h2 style="font-family:monospace">Description</h2>
-<p style="font-family:monospace">OpenAI movie recommendation engine, built in golang</p>
+<p style="font-family:monospace">OpenAI movie recommendation engine, built in golang, react, and tailwind</p>
 
 <!-- INSTALLATION -->
 <h2 style="font-family:monospace">Installation</h2>
