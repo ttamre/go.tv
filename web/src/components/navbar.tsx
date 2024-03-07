@@ -19,7 +19,12 @@ function NavBar() {
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          href="https://github.com/ttamre/go.tv"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={navigationMenuTriggerStyle()}
+        >
           Github
         </NavigationMenuLink>
       </NavigationMenuItem>
